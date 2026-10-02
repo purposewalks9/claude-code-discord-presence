@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }}, Node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm test
+
+  lint:
+    name: Lint manifests and scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate JSON manifests
+        run: |
+          for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json hooks/hooks.json package.json; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" && echo "ok  $f"
+          done
+      - name: Check plugin version is semver
+        run: node -e "const p=require('./.claude-plugin/plugin.json'); if(!/^\d+\.\d+\.\d+$/.test(p.version)) process.exit(1); console.log('version', p.version)"
+      - name: Syntax-check JavaScript
+        run: for f in $(git ls-files '*.js'); do node --check "$f"; done
+      - name: ShellCheck
+        run: shellcheck scripts/run.sh
