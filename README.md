@@ -45,6 +45,7 @@ These live in `~/.claude/discord-presence/config.json`. You can also change them
 | Key | Default | Meaning |
 |---|---|---|
 | `enabled` | `true` | Master switch |
+| `activityType` | `playing` | `playing`, `watching`, `listening` or `competing` (the word before "Claude Code") |
 | `showFiles` | `true` | Show file names in the status |
 | `smallImages` | `false` | Per-state corner icons (needs matching art assets on your Discord app) |
 | `clientId` | shared app | Use your own Discord application ID instead of the shared one |

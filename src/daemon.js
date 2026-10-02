@@ -113,6 +113,7 @@ function readSessions() {
 }
 
 const clip = (s) => (s.length > 128 ? s.slice(0, 127) + '…' : s.length < 2 ? s + '  ' : s);
+const TYPES = { playing: 0, listening: 2, watching: 3, competing: 5 };
 const ICONS = { think: 'thinking', edit: 'editing', read: 'reading', bash: 'terminal', search: 'searching', web: 'web', agent: 'agents', tool: 'tool', idle: 'idle' };
 
 function buildActivity(sessions, cfg) {
@@ -121,6 +122,7 @@ function buildActivity(sessions, cfg) {
   let doing = a.text;
   if (!cfg.showFiles && a.file) doing = a.verb === 'edit' ? 'Editing code' : 'Reading code';
   const activity = {
+    type: TYPES[cfg.activityType] ?? TYPES.playing, // "Playing Claude Code"
     details: clip(doing),             // e.g. "Thinking…"
     state: clip(s.model || 'Claude'), // e.g. "Opus 5.5"
     timestamps: { start: Math.floor(s.startedAt / 1000) },

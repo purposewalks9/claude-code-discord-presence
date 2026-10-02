@@ -15,6 +15,7 @@ const CONFIG = path.join(DATA, 'config.json');
 const DEFAULTS = {
   enabled: true,
   clientId: '1555585901264900199', // the shared "Claude Code" Discord app
+  activityType: 'playing',         // playing | watching | listening | competing
   showFiles: true,                 // "Editing app.ts" vs "Editing code"
   largeImage: 'claude',
   largeText: 'Claude Code',

@@ -11,4 +11,4 @@ node "${CLAUDE_PLUGIN_ROOT}/bin/presence.js" $ARGUMENTS
 ```
 
 If the output shows a connection error, tell the user to check that the Discord desktop app is running and that "Share your detected activities with others" is on in Discord → User Settings → Activity Privacy.
-Settings that `set` accepts: `showFiles` (true/false), `smallImages` (true/false), `clientId` (a Discord application ID), `largeImage`, `largeText`.
+Settings that `set` accepts: `showFiles` (true/false), `smallImages` (true/false), `activityType` (playing/watching/listening/competing), `clientId` (a Discord application ID), `largeImage`, `largeText`.
