@@ -2,6 +2,7 @@
   "name": "claude-code-discord-presence",
   "private": true,
   "description": "Unofficial Discord Rich Presence for Claude Code",
+  "repository": "github:purposewalks9/claude-code-discord-presence",
   "license": "MIT",
   "engines": {
     "node": ">=18"
