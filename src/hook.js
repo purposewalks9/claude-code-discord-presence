@@ -11,6 +11,8 @@ const { formatModelName, readModelFromTranscript } = require('./models');
 /**
  * Applies one hook event to a session's stored state (mutates and returns `session`).
  * Events that don't map to a status (unknown ones) only refresh the timestamps and model.
+ * Subagent tool calls carry the parent's session_id (plus agent_id/agent_type, which are
+ * ignored), so they update the parent session.
  * @param {Partial<import('./sessions').Session>} session  previous state, {} for a new session
  * @param {object} event          hook input (hook_event_name, tool_name, tool_input, model, …)
  * @param {object} context

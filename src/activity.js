@@ -1,4 +1,5 @@
-// Builds the Discord activity payload (what your profile shows) from a session and the settings.
+// Builds the Discord activity payload (what your profile shows): picks which session to show,
+// then turns it and the settings into the activity object.
 const { textWithoutFile, iconFor } = require('./states');
 
 /** Discord activity type numbers. The type is the word before "Claude Code". */
@@ -15,6 +16,19 @@ function fitDiscordText(text) {
   if (text.length > 128) return text.slice(0, 127) + '…';
   if (text.length < 2) return text + '  ';
   return text;
+}
+
+/**
+ * The session to show when several are live (all terminals, IDE and desktop sessions on this machine).
+ * A working session (any state but idle) beats an idle one, so a session that just finished
+ * can't hide another that is busy. Ties go to the most recently updated.
+ * @param {import('./sessions').Session[]} sessions
+ * @returns {import('./sessions').Session | undefined}
+ */
+function selectSession(sessions) {
+  const isWorking = (session) => (session.activity?.verb || 'idle') !== 'idle';
+  const newestFirst = [...sessions].sort((a, b) => b.updatedAt - a.updatedAt);
+  return newestFirst.find(isWorking) || newestFirst[0];
 }
 
 /**
@@ -50,4 +64,4 @@ function buildActivity(session, config) {
   return activity;
 }
 
-module.exports = { ACTIVITY_TYPES, buildActivity, fitDiscordText };
+module.exports = { ACTIVITY_TYPES, selectSession, buildActivity, fitDiscordText };

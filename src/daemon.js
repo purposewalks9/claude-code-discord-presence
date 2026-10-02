@@ -1,12 +1,13 @@
 // Background process that keeps Discord in sync with Claude Code.
-// Every few seconds it reads the session files, shows the most recently active session,
-// and reconnects to Discord when needed. It exits after 5 minutes with no sessions;
-// the next hook event starts it again.
+// One daemon serves every Claude Code session on the machine. Every few seconds it reads
+// the session files, shows the most relevant one (busy beats idle, then newest), and
+// reconnects to Discord when needed. It exits after 5 minutes with no sessions; the next
+// hook event starts it again.
 const fs = require('fs');
 const { DATA_DIR, PID_FILE, LOG_FILE, loadConfig } = require('./config');
 const { readDaemonPid } = require('./daemon-control');
 const { readActiveSessions } = require('./sessions');
-const { buildActivity } = require('./activity');
+const { selectSession, buildActivity } = require('./activity');
 const { createIpcClient } = require('./discord/ipc');
 
 const TICK_MS = 3000;
@@ -72,7 +73,7 @@ async function tick() {
 
   if (!(await ensureConnected(config.clientId))) return;
 
-  const activity = sessions.length ? buildActivity(sessions[0], config) : null;
+  const activity = sessions.length ? buildActivity(selectSession(sessions), config) : null;
   const json = JSON.stringify(activity);
   if (json !== lastSentJson) {
     discord.setActivity(activity);
