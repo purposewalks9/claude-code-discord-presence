@@ -1,0 +1,52 @@
+name: Bug report
+description: Something isn't working as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for the report! Please run `/discord-presence:presence` first and include its output below.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Claude Code
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: status
+    attributes:
+      label: Output of `/discord-presence:presence`
+      render: text
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      placeholder: "1.2.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options: [Linux, macOS, Windows]
+    validations:
+      required: true
+  - type: input
+    id: discord
+    attributes:
+      label: Discord client
+      placeholder: Stable / PTB / Canary / Flatpak / Snap / Vesktop
+  - type: input
+    id: versions
+    attributes:
+      label: Claude Code and Node.js versions
+      placeholder: "claude --version, node --version"
