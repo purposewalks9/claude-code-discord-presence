@@ -25,6 +25,7 @@ test('builds the default activity', () => {
     type: 0,
     details: 'Editing app.ts',
     state: 'Opus 5.5',
+    timestamps: { start: 1_700_000_000 },
     instance: false,
     assets: { large_image: 'claude', large_text: 'Claude Code' },
   });
