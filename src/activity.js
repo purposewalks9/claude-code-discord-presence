@@ -39,7 +39,8 @@ function selectSession(sessions) {
 
 /**
  * Discord activity for a session. The card shows only the app name (from the Discord app),
- * details (line 1) = what Claude is doing, and state (line 2) = the model. No elapsed timer.
+ * details (line 1) = what Claude is doing, state (line 2) = the model, and the elapsed time since
+ * the session started.
  * @param {import('./sessions').Session} session
  * @param {import('./config').Config} config
  * @returns {object} the `activity` argument of Discord's SET_ACTIVITY command
@@ -52,6 +53,7 @@ function buildActivity(session, config) {
     type: ACTIVITY_TYPES[config.activityType] ?? ACTIVITY_TYPES.playing,
     details: fitDiscordText(statusText),
     state: fitDiscordText(session.model || 'Claude'),
+    timestamps: { start: Math.floor(session.startedAt / 1000) },
     instance: false,
   };
 

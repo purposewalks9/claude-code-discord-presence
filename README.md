@@ -6,6 +6,7 @@
 Playing Claude Code
   Thinking…
   Opus 5.5
+  12:04 elapsed
 ```
 
 Live states: **Thinking…**, **Editing / Reading `<file>`**, **Searching the codebase**, **Running commands**, **Browsing the web**, **Running subagents**, **Using `<tool>`**, **Waiting for input**.

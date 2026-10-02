@@ -30,9 +30,9 @@ test('builds the default activity', () => {
   });
 });
 
-test('the card shows no elapsed timer and the hover text is just largeText', () => {
+test('the card shows time elapsed since the session started; hover text is just largeText', () => {
   const activity = buildActivity(session, { ...config, largeText: 'My Claude' });
-  assert.strictEqual(activity.timestamps, undefined);
+  assert.deepStrictEqual(activity.timestamps, { start: Math.floor(session.startedAt / 1000) });
   assert.strictEqual(activity.assets.large_text, 'My Claude');
 });
 

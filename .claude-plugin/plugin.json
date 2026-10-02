@@ -1,6 +1,6 @@
 {
   "name": "discord-presence",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Unofficial Discord Rich Presence for Claude Code. Shows what Claude is doing (thinking, editing, running commands…) and which model is active.",
   "author": { "name": "purposewalks9" },
   "homepage": "https://github.com/purposewalks9/claude-code-discord-presence",
