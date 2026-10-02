@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="196" viewBox="0 0 560 196" role="img" aria-label="Discord profile card: Playing Claude Code, Thinking…, Opus 5.5, 12:04 elapsed">
+  <defs>
+    <linearGradient id="logo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E8875A"/>
+      <stop offset="1" stop-color="#C15F3C"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect x="10" y="6" width="540" height="176" rx="14" fill="#232428" filter="url(#shadow)"/>
+  <text x="34" y="42" font-family="'gg sans','Noto Sans','Helvetica Neue',Arial,sans-serif" font-size="12" font-weight="700" letter-spacing="0.6" fill="#B5BAC1">PLAYING A GAME</text>
+  <rect x="34" y="60" width="96" height="96" rx="12" fill="url(#logo)"/>
+  <g transform="translate(82 108)" stroke="#FFF7F0" stroke-width="8" stroke-linecap="round">
+    <line x1="0" y1="-28" x2="0" y2="28"/>
+    <line x1="-28" y1="0" x2="28" y2="0"/>
+    <line x1="-20" y1="-20" x2="20" y2="20"/>
+    <line x1="-20" y1="20" x2="20" y2="-20"/>
+  </g>
+  <g font-family="'gg sans','Noto Sans','Helvetica Neue',Arial,sans-serif">
+    <text x="150" y="86" font-size="17" font-weight="700" fill="#F2F3F5">Claude Code</text>
+    <text x="150" y="112" font-size="15" fill="#DBDEE1">Thinking…</text>
+    <text x="150" y="136" font-size="15" fill="#DBDEE1">Opus 5.5</text>
+    <text x="150" y="160" font-size="15" fill="#DBDEE1">12:04 elapsed</text>
+  </g>
+  <circle cx="520" cy="38" r="5" fill="#23A55A"/>
+</svg>
