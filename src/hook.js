@@ -1,84 +1,69 @@
-// Claude Code hook: records per-session activity and makes sure the presence daemon is running.
-const fs = require('fs');
-const path = require('path');
-const { SESSIONS, loadConfig, startDaemon } = require('./common');
+// Claude Code hook entry point (run by scripts/run.sh for every hook event).
+// Reads the hook event JSON from stdin, updates that session's state file,
+// and starts the daemon if it isn't running. It never fails loudly: presence
+// must not get in the way of Claude Code.
+const { loadConfig } = require('./config');
+const { startDaemon } = require('./daemon-control');
+const { sanitizeSessionId, readSession, writeSession, removeSession } = require('./sessions');
+const { describeEvent, describeTool } = require('./states');
+const { formatModelName, readModelFromTranscript } = require('./models');
 
-function describeTool(name, input = {}) {
-  const file = input.file_path || input.notebook_path || input.path;
-  const base = file ? path.basename(file) : null;
-  switch (name) {
-    case 'Edit': case 'MultiEdit': case 'Write': case 'NotebookEdit':
-      return { verb: 'edit', text: base ? `Editing ${base}` : 'Editing code', file: base };
-    case 'Read':
-      return { verb: 'read', text: base ? `Reading ${base}` : 'Reading code', file: base };
-    case 'Bash': case 'PowerShell': return { verb: 'bash', text: 'Running commands' };
-    case 'Grep': case 'Glob': return { verb: 'search', text: 'Searching the codebase' };
-    case 'WebFetch': case 'WebSearch': return { verb: 'web', text: 'Browsing the web' };
-    case 'Agent': case 'Task': return { verb: 'agent', text: 'Running subagents' };
-    default: return { verb: 'tool', text: `Using ${name.replace(/^mcp__/, '').split('__').pop()}` };
+/**
+ * Applies one hook event to a session's stored state (mutates and returns `session`).
+ * Events that don't map to a status (unknown ones) only refresh the timestamps and model.
+ * @param {Partial<import('./sessions').Session>} session  previous state, {} for a new session
+ * @param {object} event          hook input (hook_event_name, tool_name, tool_input, model, …)
+ * @param {object} context
+ * @param {string} context.sessionId
+ * @param {number} context.now
+ * @param {string | null} context.transcriptModel  model id found in the transcript
+ * @returns {import('./sessions').Session}
+ */
+function applyHookEvent(session, event, { sessionId, now, transcriptModel }) {
+  session.sessionId = sessionId;
+  session.startedAt = session.startedAt || now;
+  session.updatedAt = now;
+
+  const eventModel = typeof event.model === 'string' ? event.model : event.model?.id;
+  session.model = formatModelName(transcriptModel) || formatModelName(eventModel) || session.model || null;
+
+  const activity = event.hook_event_name === 'PreToolUse'
+    ? describeTool(event.tool_name || 'tool', event.tool_input)
+    : describeEvent(event.hook_event_name);
+  if (activity) session.activity = activity;
+
+  return session;
+}
+
+function handleHookInput(rawInput) {
+  if (!loadConfig().enabled) return;
+  const event = JSON.parse(rawInput || '{}');
+  const sessionId = sanitizeSessionId(event.session_id);
+
+  if (event.hook_event_name === 'SessionEnd') {
+    removeSession(sessionId);
+    return;
   }
+
+  const session = applyHookEvent(readSession(sessionId), event, {
+    sessionId,
+    now: Date.now(),
+    transcriptModel: readModelFromTranscript(event.transcript_path),
+  });
+  writeSession(sessionId, session);
+  startDaemon();
 }
 
-// "claude-opus-5-5[1m]" -> "Opus 5.5", "claude-haiku-4-5-20251001" -> "Haiku 4.5"
-function prettyModel(id) {
-  if (!id || typeof id !== 'string' || id.startsWith('<')) return null;
-  const parts = id.replace(/\[.*\]$/, '').replace(/^claude-/, '').split('-').filter((p) => !/^\d{8}$/.test(p));
-  const family = parts.find((p) => /^[a-z]+$/i.test(p));
-  if (!family) return id;
-  const version = parts.filter((p) => /^\d+$/.test(p)).join('.');
-  return `${family[0].toUpperCase()}${family.slice(1)}${version ? ' ' + version : ''}`;
-}
-
-// Latest model used in this session, read from the tail of the transcript.
-function modelFromTranscript(file) {
-  if (!file) return null;
-  try {
-    const fd = fs.openSync(file, 'r');
-    const size = fs.fstatSync(fd).size;
-    const len = Math.min(size, 256 * 1024);
-    const buf = Buffer.alloc(len);
-    fs.readSync(fd, buf, 0, len, size - len);
-    fs.closeSync(fd);
-    const matches = [...buf.toString().matchAll(/"model":"(claude-[^"]+)"/g)];
-    return matches.length ? matches[matches.length - 1][1] : null;
-  } catch { return null; }
-}
-
-let raw = '';
-process.stdin.on('data', (c) => (raw += c));
-process.stdin.on('end', () => {
-  try {
-    if (!loadConfig().enabled) return;
-    const ev = JSON.parse(raw || '{}');
-    const id = String(ev.session_id || 'unknown').replace(/[^\w-]/g, '');
-    const file = path.join(SESSIONS, `${id}.json`);
-    fs.mkdirSync(SESSIONS, { recursive: true });
-
-    if (ev.hook_event_name === 'SessionEnd') {
-      fs.rmSync(file, { force: true });
-      return;
+if (require.main === module) {
+  let rawInput = '';
+  process.stdin.on('data', (chunk) => (rawInput += chunk));
+  process.stdin.on('end', () => {
+    try {
+      handleHookInput(rawInput);
+    } catch {
+      // never break Claude Code over presence
     }
+  });
+}
 
-    let s = {};
-    try { s = JSON.parse(fs.readFileSync(file, 'utf8')); } catch {}
-    const now = Date.now();
-    s.sessionId = id;
-    s.startedAt = s.startedAt || now;
-    s.updatedAt = now;
-    const evModel = typeof ev.model === 'string' ? ev.model : ev.model?.id;
-    s.model = prettyModel(modelFromTranscript(ev.transcript_path)) || prettyModel(evModel) || s.model || null;
-
-    switch (ev.hook_event_name) {
-      case 'SessionStart': s.activity = { verb: 'idle', text: 'Starting a session' }; break;
-      case 'UserPromptSubmit': s.activity = { verb: 'think', text: 'Thinking…' }; break;
-      case 'PreToolUse': s.activity = describeTool(ev.tool_name || 'tool', ev.tool_input); break;
-      case 'PostToolUse': s.activity = { verb: 'think', text: 'Thinking…' }; break;
-      case 'Stop': case 'Notification': s.activity = { verb: 'idle', text: 'Waiting for input' }; break;
-    }
-
-    fs.writeFileSync(file, JSON.stringify(s));
-    startDaemon();
-  } catch {
-    // never break Claude Code over presence
-  }
-});
+module.exports = { applyHookEvent };
