@@ -1,0 +1,10 @@
+{
+  "name": "discord-presence",
+  "version": "1.0.0",
+  "description": "Unofficial Discord Rich Presence for Claude Code. Shows what Claude is doing (thinking, editing, running commands…) and which model is active.",
+  "author": { "name": "purposewalks9" },
+  "homepage": "https://github.com/purposewalks9/claude-code-discord-presence",
+  "repository": "https://github.com/purposewalks9/claude-code-discord-presence",
+  "license": "MIT",
+  "keywords": ["discord", "rich-presence", "rpc", "status"]
+}

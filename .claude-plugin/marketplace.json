@@ -1,0 +1,13 @@
+{
+  "name": "discord-presence",
+  "owner": { "name": "purposewalks9" },
+  "description": "Discord Rich Presence for Claude Code",
+  "plugins": [
+    {
+      "name": "discord-presence",
+      "source": "./",
+      "description": "Unofficial Discord Rich Presence for Claude Code. Shows what Claude is doing and which model is active.",
+      "category": "productivity"
+    }
+  ]
+}
