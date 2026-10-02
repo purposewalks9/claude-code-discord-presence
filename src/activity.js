@@ -7,6 +7,9 @@ const ACTIVITY_TYPES = { playing: 0, listening: 2, watching: 3, competing: 5 };
 
 const IDLE_ACTIVITY = { verb: 'idle', text: 'Idle' };
 
+/** A "working" session silent this long behind the newest one is treated as stuck (e.g. crashed). */
+const STUCK_AFTER_MS = 10 * 60 * 1000;
+
 /**
  * Discord requires activity strings of 2 to 128 characters.
  * @param {string} text
@@ -21,13 +24,16 @@ function fitDiscordText(text) {
 /**
  * The session to show when several are live (all terminals, IDE and desktop sessions on this machine).
  * A working session (any state but idle) beats an idle one, so a session that just finished
- * can't hide another that is busy. Ties go to the most recently updated.
+ * can't hide another that is busy. Ties go to the most recently updated. A working session that
+ * has gone quiet for STUCK_AFTER_MS while others kept updating (e.g. it crashed) no longer wins.
  * @param {import('./sessions').Session[]} sessions
  * @returns {import('./sessions').Session | undefined}
  */
 function selectSession(sessions) {
-  const isWorking = (session) => (session.activity?.verb || 'idle') !== 'idle';
   const newestFirst = [...sessions].sort((a, b) => b.updatedAt - a.updatedAt);
+  const newestUpdate = newestFirst[0]?.updatedAt ?? 0;
+  const isWorking = (session) =>
+    (session.activity?.verb || 'idle') !== 'idle' && newestUpdate - session.updatedAt < STUCK_AFTER_MS;
   return newestFirst.find(isWorking) || newestFirst[0];
 }
 
@@ -63,4 +69,4 @@ function buildActivity(session, config) {
   return activity;
 }
 
-module.exports = { ACTIVITY_TYPES, selectSession, buildActivity, fitDiscordText };
+module.exports = { ACTIVITY_TYPES, STUCK_AFTER_MS, selectSession, buildActivity, fitDiscordText };

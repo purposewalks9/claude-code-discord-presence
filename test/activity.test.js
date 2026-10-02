@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { buildActivity, selectSession, fitDiscordText } = require('../src/activity');
+const { buildActivity, selectSession, fitDiscordText, STUCK_AFTER_MS } = require('../src/activity');
 
 const config = {
   enabled: true,
@@ -87,6 +87,11 @@ const make = (id, verb, updatedAt) => ({ sessionId: id, startedAt: 0, updatedAt,
 test('selectSession prefers a working session over a newer idle one', () => {
   const sessions = [make('idle-new', 'idle', 300), make('busy-old', 'bash', 100), make('busy-mid', 'think', 200)];
   assert.strictEqual(selectSession(sessions).sessionId, 'busy-mid');
+});
+
+test('selectSession ignores a working session that went quiet long ago (e.g. crashed)', () => {
+  const sessions = [make('crashed', 'bash', 100), make('live-idle', 'idle', 100 + STUCK_AFTER_MS + 1)];
+  assert.strictEqual(selectSession(sessions).sessionId, 'live-idle');
 });
 
 test('selectSession picks the newest session when all are idle', () => {
