@@ -4,9 +4,8 @@
 
 ```
 Playing Claude Code
-  Editing app.ts
+  Thinking…
   Opus 5.5
-  12:04 elapsed
 ```
 
 Live states: **Thinking…**, **Editing / Reading `<file>`**, **Searching the codebase**, **Running commands**, **Browsing the web**, **Running subagents**, **Using `<tool>`**, **Waiting for input**.
@@ -49,7 +48,7 @@ These live in `~/.claude/discord-presence/config.json`. You can also change them
 | `showFiles` | `true` | Show file names in the status |
 | `smallImages` | `false` | Per-state corner icons (needs matching art assets on your Discord app) |
 | `clientId` | shared app | Use your own Discord application ID instead of the shared one |
-| `largeImage` / `largeText` | `claude` / `Claude Code` | Big image asset key and hover text |
+| `largeImage` / `largeText` | `claude` / `Claude Code` | Big image asset key and its hover text |
 
 ## Privacy
 
