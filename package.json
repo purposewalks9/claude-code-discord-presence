@@ -1,0 +1,12 @@
+{
+  "name": "claude-code-discord-presence",
+  "private": true,
+  "description": "Unofficial Discord Rich Presence for Claude Code",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
