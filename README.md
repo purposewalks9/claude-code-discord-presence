@@ -30,7 +30,7 @@ Restart Claude Code and send a message. That's it.
 
 ## Commands
 
-| Command (`/presence` also works if no other plugin uses that name) | What it does |
+| Command | What it does |
 |---|---|
 | `/discord-presence:presence` | Shows status: daemon running, connection, current state |
 | `/discord-presence:presence restart` | Restarts the connection to Discord |
