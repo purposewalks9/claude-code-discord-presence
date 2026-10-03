@@ -2,8 +2,8 @@
 
 # Discord Presence for Claude Code
 
-**Show the world what Claude is building.**
-A zero-dependency Claude Code plugin that puts Claude's live status and model on your Discord profile.
+**Your friends see you're "Playing" something. Now they'll see it's Claude Code.**
+A tiny, zero-dependency plugin that streams what Claude is doing, and which model is doing it, straight onto your Discord profile.
 
 [![CI](https://github.com/purposewalks9/claude-code-discord-presence/actions/workflows/ci.yml/badge.svg)](https://github.com/purposewalks9/claude-code-discord-presence/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/purposewalks9/claude-code-discord-presence?color=c15f3c)](https://github.com/purposewalks9/claude-code-discord-presence/releases)
@@ -14,20 +14,36 @@ A zero-dependency Claude Code plugin that puts Claude's live status and model on
 
 <img src="assets/preview.svg" alt="Discord profile card showing: Playing Claude Code, Thinking…, Opus 5.5, 12:04 elapsed" width="560">
 
+<sub>Two commands to install. No tokens, no login, no `npm install`.</sub>
+
 </div>
 
 ---
 
-## Features
+## What your profile says
 
-- **Live status:** your profile shows what Claude is doing right now: *Thinking…*, *Editing app.ts*, *Running commands*, *Searching the codebase*, *Browsing the web*, *Running subagents*, *Waiting for input*.
-- **Active model:** shows *Opus 5.5*, *Sonnet 5.5*, *Haiku 4.5* and so on, and updates the moment you switch with `/model`.
-- **Elapsed time:** shows how long the current session has been running.
-- **One presence per machine:** every terminal, IDE and desktop session (plus subagents) feeds a single status. A busy session beats an idle one, so the card always shows real work.
-- **Zero setup:** no tokens, no login and no Discord developer account. It talks to the Discord app already running on your computer.
-- **Zero dependencies:** plain Node.js with a built-in Discord IPC client. Nothing to `npm install`.
-- **Private by design:** project names, paths, prompts and code never leave your machine.
-- **Starts itself:** comes up with Claude Code, and shuts down 5 minutes after your last session closes.
+Every move Claude makes shows up on your card within a few seconds:
+
+| When Claude is… | Your Discord shows |
+|---|---|
+| Reading your prompt and planning | `Thinking…` |
+| Writing or editing a file | `Editing app.ts` |
+| Opening a file | `Reading schema.sql` |
+| Running a shell command | `Running commands` |
+| Grepping through the project | `Searching the codebase` |
+| Searching or fetching the web | `Browsing the web` |
+| Handing work to subagents | `Running subagents` |
+| Done and waiting on you | `Waiting for input` |
+
+The second line is the model, *Opus 5.5*, *Sonnet 5.5*, *Haiku 4.5* and so on, and it flips the moment you run `/model`. Below that, a timer counts how long the session has been going.
+
+## Why it's different
+
+- **One card, every session.** Terminals, IDEs, the desktop app and subagents all feed one presence per machine. A busy session always wins over an idle one, so the card shows real work, not a forgotten tab.
+- **Nothing to set up.** It talks to the Discord app already running on your computer. No bot token, no developer portal, no account linking.
+- **Nothing to install.** Plain Node.js with its own built-in Discord IPC client. Zero dependencies.
+- **Nothing leaks.** Project names, paths, prompts and code stay on your machine. Hide file names too with one setting.
+- **Nothing to babysit.** It starts with Claude Code and quietly shuts down 5 minutes after your last session closes.
 
 ## Installation
 
